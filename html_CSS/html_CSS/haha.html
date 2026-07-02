@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>阮哥洗面乳專賣鋪</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>點擊下面立即購買</h1>
+    <img src="734088491_1768729317884247_3017759108073552811_n.jpg" alt="洗面乳" class="product-image">
+    <p class="price">價格：800元 / 瓶</p>
+
+    <div id="form-errors" class="form-errors" hidden></div>
+
+    <form action="/order" method="POST" id="order-form" novalidate>
+      <input type="text" name="name" placeholder="姓名" required>
+      <input type="tel" name="phone" placeholder="電話（例：0912345678）" required>
+      <input type="text" name="address" placeholder="地址（例：台北市中正區重慶南路一段122號）" required>
+      <input type="number" name="quantity" placeholder="數量" min="1" required>
+      <button type="submit">下單</button>
+    </form>
+  </div>
+
+  <!-- 客服選單 -->
+  <button type="button" id="chat-toggle" class="chat-toggle" aria-label="開啟客服">💬 客服</button>
+
+  <div id="chat-panel" class="chat-panel" hidden>
+    <div class="chat-header">
+      <span>線上客服</span>
+      <button type="button" id="chat-close" aria-label="關閉">✕</button>
+    </div>
+    <div id="chat-messages" class="chat-messages">
+      <div class="chat-msg bot">您好！我是自動客服，有什麼可以幫您的嗎？</div>
+    </div>
+    <div class="chat-quick">
+      <button type="button" data-question="運費多少？">運費</button>
+      <button type="button" data-question="如何付款？">付款</button>
+      <button type="button" data-question="可以退貨嗎？">退貨</button>
+      <button type="button" data-question="價格多少？">價格</button>
+    </div>
+    <form id="chat-form" class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="輸入問題..." autocomplete="off">
+      <button type="submit">送出</button>
+    </form>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
