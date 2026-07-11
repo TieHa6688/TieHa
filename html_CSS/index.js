@@ -4,120 +4,130 @@ const form = document.querySelector('#order-form');
 const phoneInput = document.querySelector('input[name="phone"]');
 const addressInput = document.querySelector('input[name="address"]');
 const errorBox = document.querySelector('#form-errors');
-
-// 動態顯示總價
-const totalPriceDisplay = document.createElement('p');
-totalPriceDisplay.classList.add('total-price');
-totalPriceDisplay.textContent = `總價：${pricePerUnit} 元`;
-form.appendChild(totalPriceDisplay);
+const totalDisplay = document.querySelector('#total-display');
 
 quantityInput.addEventListener('input', () => {
-    const qty = parseInt(quantityInput.value) || 0;
-    totalPriceDisplay.textContent = `總價：${pricePerUnit * qty} 元`;
+  const qty = parseInt(quantityInput.value) || 0;
+  totalDisplay.textContent = `總價：NT$ ${(pricePerUnit * (qty || 1)).toLocaleString()}`;
 });
 
 function validatePhone(phone) {
-    const cleaned = phone.replace(/[\s\-]/g, '');
-    if (/^09\d{8}$/.test(cleaned)) return '';
-    if (/^0\d{8,9}$/.test(cleaned)) return '';
-    return '電話格式錯誤，請輸入手機 09xxxxxxxx 或正確市話';
+  const c = phone.replace(/[\s\-]/g, '');
+  if (/^09\d{8}$/.test(c) || /^0\d{8,9}$/.test(c)) return '';
+  return '電話格式錯誤，請輸入手機 09xxxxxxxx 或正確市話';
 }
 
-function validateAddress(address) {
-    const addr = address.trim();
-    if (addr.length < 10) return '地址太短，請填寫完整配送地址';
-    if (!/[縣市]/.test(addr)) return '地址需包含縣或市（例：台北市、新北市）';
-    if (!/[路街道巷弄號樓]/.test(addr)) return '地址需包含路/街/巷/弄/號等詳細資訊';
-    return '';
+function validateAddress(addr) {
+  addr = addr.trim();
+  if (addr.length < 10) return '地址太短，請填寫完整配送地址';
+  if (!/[縣市]/.test(addr)) return '地址需包含縣或市';
+  if (!/[路街道巷弄號樓]/.test(addr)) return '地址需包含路/街/巷/弄/號';
+  return '';
 }
 
-function showErrors(messages) {
-    if (messages.length === 0) {
-        errorBox.hidden = true;
-        errorBox.innerHTML = '';
-        return;
-    }
-    errorBox.hidden = false;
-    errorBox.innerHTML = messages.map(msg => `<p>${msg}</p>`).join('');
+function showErrors(msgs) {
+  if (!msgs.length) { errorBox.hidden = true; errorBox.innerHTML = ''; return; }
+  errorBox.hidden = false;
+  errorBox.innerHTML = msgs.map(m => `<p>${m}</p>`).join('');
 }
 
 function validateForm() {
-    const errors = [];
-    const phoneErr = validatePhone(phoneInput.value);
-    const addressErr = validateAddress(addressInput.value);
-    if (phoneErr) errors.push(phoneErr);
-    if (addressErr) errors.push(addressErr);
-    showErrors(errors);
-    return errors.length === 0;
+  const errors = [validatePhone(phoneInput.value), validateAddress(addressInput.value)].filter(Boolean);
+  showErrors(errors);
+  return !errors.length;
 }
 
 phoneInput.addEventListener('blur', validateForm);
 addressInput.addEventListener('blur', validateForm);
 
 form.addEventListener('submit', (e) => {
-    if (!validateForm()) {
-        e.preventDefault();
-        return;
-    }
-
-    const qty = parseInt(quantityInput.value) || 0;
-    const confirmOrder = confirm(`確定下單嗎？\n總價：${pricePerUnit * qty} 元\n\n下單後請依指示匯款至指定帳戶。`);
-    if (!confirmOrder) {
-        e.preventDefault();
-    }
+  if (!validateForm()) e.preventDefault();
 });
 
-// 客服選單
+// ===== 查詢訂單 =====
+async function queryOrder() {
+  const id = document.querySelector('#query-input').value.trim().toUpperCase();
+  const resultBox = document.querySelector('#query-result');
+  if (!id) { resultBox.hidden = false; resultBox.innerHTML = '<p style="color:#e53935">請輸入訂單編號</p>'; return; }
+
+  try {
+    const res = await fetch(`/api/order/${id}`);
+    const data = await res.json();
+    if (!data.found) {
+      resultBox.hidden = false;
+      resultBox.innerHTML = '<p style="color:#e53935">查無此訂單，請確認編號是否正確</p>';
+      return;
+    }
+    const o = data.order;
+    const statusText = o.status === 'awaiting_payment'
+      ? '<span class="status-waiting">待付款</span>'
+      : '<span class="status-done">已完成</span>';
+    resultBox.hidden = false;
+    resultBox.innerHTML = `
+      <div class="q-row"><span class="q-key">訂單編號</span><span class="q-val">${o.order_id}</span></div>
+      <div class="q-row"><span class="q-key">收件人</span><span class="q-val">${o.name}</span></div>
+      <div class="q-row"><span class="q-key">電話</span><span class="q-val">${o.phone}</span></div>
+      <div class="q-row"><span class="q-key">地址</span><span class="q-val">${o.address}</span></div>
+      <div class="q-row"><span class="q-key">數量</span><span class="q-val">${o.quantity} 瓶</span></div>
+      <div class="q-row"><span class="q-key">金額</span><span class="q-val">NT$ ${o.total_price.toLocaleString()}</span></div>
+      <div class="q-row"><span class="q-key">狀態</span><span class="q-val">${statusText}</span></div>
+      <div class="q-row"><span class="q-key">下單時間</span><span class="q-val">${o.created_at}</span></div>
+    `;
+  } catch {
+    resultBox.hidden = false;
+    resultBox.innerHTML = '<p style="color:#e53935">查詢失敗，請稍後再試</p>';
+  }
+}
+
+document.querySelector('#query-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') queryOrder();
+});
+
+// ===== 客服（純前端）=====
+const FAQ = {
+  '運費': '全台宅配免運費，下單後 3～5 個工作天送達。',
+  '配送': '全台宅配免運費，下單後 3～5 個工作天送達。',
+  '退貨': '收到商品 7 天內，未開封可申請退貨，請聯絡客服協助處理。',
+  '退款': '退貨審核通過後，款項將於 7 個工作天內退回原匯款帳戶。',
+  '付款': '下單後依訂單頁面顯示的銀行帳號匯款，備註填訂單編號即可。',
+  '匯款': '下單後依訂單頁面顯示的銀行帳號匯款，備註填訂單編號即可。',
+  '價格': `每瓶 ${pricePerUnit} 元，多瓶依數量計算。`,
+  '成分': '含胺基酸系界面活性劑，溫和不刺激，適合一般及混合性肌膚。',
+  '你好': '您好！有什麼可以幫您的嗎？',
+  '您好': '您好！有什麼可以幫您的嗎？',
+};
+const DEFAULT_REPLY = '可詢問：運費、付款、退貨、價格、成分，或點選下方快捷。';
+
+function getReply(msg) {
+  for (const [k, v] of Object.entries(FAQ)) if (msg.includes(k)) return v;
+  return DEFAULT_REPLY;
+}
+
 const chatToggle = document.querySelector('#chat-toggle');
 const chatPanel = document.querySelector('#chat-panel');
 const chatClose = document.querySelector('#chat-close');
 const chatMessages = document.querySelector('#chat-messages');
 const chatForm = document.querySelector('#chat-form');
 const chatInput = document.querySelector('#chat-input');
-const quickButtons = document.querySelectorAll('.chat-quick button');
 
-function addMessage(text, type) {
-    const div = document.createElement('div');
-    div.className = `chat-msg ${type}`;
-    div.textContent = text;
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+function addMsg(text, type) {
+  const div = document.createElement('div');
+  div.className = `chat-msg ${type}`;
+  div.textContent = text;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-async function sendChatMessage(message) {
-    if (!message.trim()) return;
-
-    addMessage(message, 'user');
-    chatInput.value = '';
-
-    try {
-        const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message }),
-        });
-        const data = await res.json();
-        addMessage(data.reply, 'bot');
-    } catch {
-        addMessage('連線失敗，請確認後端已啟動（python app.py）。', 'bot');
-    }
+function sendMsg(msg) {
+  if (!msg.trim()) return;
+  addMsg(msg, 'user');
+  chatInput.value = '';
+  setTimeout(() => addMsg(getReply(msg), 'bot'), 250);
 }
 
-chatToggle.addEventListener('click', () => {
-    chatPanel.hidden = false;
-});
-
-chatClose.addEventListener('click', () => {
-    chatPanel.hidden = true;
-});
-
-chatForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    sendChatMessage(chatInput.value);
-});
-
-quickButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        sendChatMessage(btn.dataset.question);
-    });
+chatToggle.addEventListener('click', () => { chatPanel.hidden = false; });
+chatClose.addEventListener('click', () => { chatPanel.hidden = true; });
+chatForm.addEventListener('submit', (e) => { e.preventDefault(); sendMsg(chatInput.value); });
+document.querySelectorAll('.chat-quick button').forEach(btn => {
+  btn.addEventListener('click', () => sendMsg(btn.dataset.question));
 });
