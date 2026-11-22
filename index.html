@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消費者幫幫忙 | 買到瑕疵品、退款被拖延，別自己吞下去</title>
+<meta name="description" content="台灣消費者幫助網站：常見問題、申訴流程、申訴信範本產生器、七天鑑賞期計算器、1950專線">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;background:#f6f8fb;color:#1a2333;line-height:1.6}
+a{color:#0e7a6b}.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{background:#fff;border-bottom:1px solid #e6ebf2;position:sticky;top:0;z-index:10}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}.logo{font-weight:900;font-size:22px}.logo span{color:#0e7a6b}.nav a{text-decoration:none;color:#334155;font-size:14px;margin-left:18px}
+.hero{background:linear-gradient(135deg,#0e7a6b,#0ea5a0 60%,#7dd3fc);color:#fff;padding:56px 0 48px}.hero h1{font-size:42px;line-height:1.2;margin:0 0 12px}.hero p{font-size:17px;opacity:.95;max-width:720px}.searchbox{margin-top:22px;background:#fff;border-radius:14px;padding:8px;display:flex;gap:8px;max-width:760px}.searchbox input{flex:1;border:0;outline:0;padding:12px;font-size:16px}.btn{background:#0e7a6b;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.btn.light{background:#fff;color:#0e7a6b}.quick{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:8px 12px;border-radius:999px;font-size:14px;cursor:pointer}
+section{padding:36px 0}h2{font-size:28px;margin:0 0 8px}.sub{color:#64748b;margin:0 0 20px}.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}.card{background:#fff;border:1px solid #e6ebf2;border-radius:16px;padding:20px}.card h3{margin:0 0 8px}.card p{color:#64748b;font-size:14px;margin:0 0 14px}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.filter{border:1px solid #cbd5e1;background:#fff;padding:8px 14px;border-radius:999px;cursor:pointer}.filter.active{background:#0e7a6b;color:#fff;border-color:#0e7a6b}.faq{background:#fff;border:1px solid #e6ebf2;border-radius:14px;margin-bottom:10px;overflow:hidden}.faq summary{padding:16px 18px;cursor:pointer;font-weight:700;list-style:none}.faq summary::-webkit-details-marker{display:none}.faq div{padding:0 18px 18px;color:#475569;font-size:15px}.tag{display:inline-block;background:#ecfeff;color:#0e7a6b;border-radius:999px;padding:2px 8px;font-size:12px;margin-left:8px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.step{background:#fff;border-radius:16px;padding:20px;border:1px solid #e6ebf2}.step b{font-size:28px;color:#0e7a6b}.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form label{font-size:14px;font-weight:700}.form input,.form textarea,.form select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;margin-top:6px;font-size:15px}.full{grid-column:1/-1}textarea{min-height:110px}.output{background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px;white-space:pre-wrap;font-size:15px;min-height:180px}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.check label{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed #e2e8f0}.notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:16px}.footer,footer{background:#0f172a;color:#cbd5e1;padding:32px 0;font-size:14px}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+@media(max-width:820px){.hero h1{font-size:32px}.grid,.steps,.two,.form{grid-template-columns:1fr}.nav a{display:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav"><div class="logo">消費者<span>幫幫忙</span></div><nav><a href="#faq">常見問題</a><a href="#flow">申訴流程</a><a href="#letter">申訴信產生器</a><a href="#calc">鑑賞期計算</a><a href="#complaint">我要投訴</a></nav></div></header>
+<div class="hero"><div class="wrap"><h1>買到瑕疵品、被拖延退款<br>別自己吞下去。</h1><p>這裡幫你查權益、走流程、寫申訴信。先蒐證、再申訴，照著做就好。</p><div class="searchbox"><input id="q" placeholder="搜尋問題，例如：七天、退款、瑕疵、健身房…"><button class="btn" onclick="doSearch()">搜尋</button></div><div class="quick"><span class="chip" onclick="quick('七天')">七天鑑賞期</span><span class="chip" onclick="quick('退款')">退款拖延</span><span class="chip" onclick="quick('瑕疵')">瑕疵品</span><span class="chip" onclick="quick('健身房')">健身房解約</span></div></div></div>
+
+<section class="wrap" id="faq"><h2>常見問題</h2><p class="sub">點分類篩選，或用上方搜尋。以下為一般資訊，非法律諮詢。</p>
+<div class="filters" id="filters"></div><div id="faqList"></div></section>
+
+<section class="wrap" id="flow"><h2>申訴流程，4 步走完</h2><p class="sub">先跟店家談，談不攏再找消保官。記得全程留證據。</p>
+<div class="steps"><div class="step"><b>01</b><h3>蒐證</h3><p>發票、訂單、對話截圖、商品照片、合約全部存好。</p></div><div class="step"><b>02</b><h3>向店家申訴</h3><p>用文字提出訴求、給合理期限，例如 7 天內回覆。</p></div><div class="step"><b>03</b><h3>向消保官申訴</h3><p>打 1950 或到行政院消保會線上申訴，附上證據。</p></div><div class="step"><b>04</b><h3>調解 / 訴訟</h3><p>調解不成，可考慮小額訴訟或消保團體訴訟。</p></div></div>
+<div class="two" style="margin-top:16px"><div class="card"><h3>申訴前檢查清單</h3><div class="check" id="checklist"></div><p id="progress" style="font-weight:800;color:#0e7a6b"></p></div><div class="card notice"><h3>⚠️ 先別做的 3 件事</h3><p>1. 不要只用電話吵架，要留文字紀錄<br>2. 不要把瑕疵品丟掉或自行修壞<br>3. 不要簽看不懂的和解書，簽之前先拍照留存</p></div></div></section>
+
+<section class="wrap" id="letter"><h2>申訴信範本產生器</h2><p class="sub">填完按產生，就能複製貼到 Email 或申訴系統。</p><div class="two"><div class="card"><div class="form"><div><label>你的姓名</label><input id="name" placeholder="例如：王小明"></div><div><label>店家名稱</label><input id="shop" placeholder="例如：XX 購物"></div><div><label>購買日期</label><input id="buyDate" type="date"></div><div><label>金額</label><input id="amount" placeholder="例如：2990"></div><div class="full"><label>事件描述</label><textarea id="desc" placeholder="例如：3/1 下單買手機，收到時螢幕有刮痕，聯繫客服三天未回覆，希望退貨退款。"></textarea></div><div class="full"><button class="btn" onclick="genLetter()">產生申訴信 →</button> <button class="btn light" style="border:1px solid #cbd5e1" onclick="copyLetter()">複製申訴信</button></div></div></div><div class="output" id="letterOut">填寫左邊資料後，這裡會自動產生一封正式申訴信。</div></div></section>
+
+<section class="wrap" id="calc"><h2>七天鑑賞期計算器</h2><div class="two"><div class="card"><label>購買 / 收到商品日期</label><input id="calcDate" type="date" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;margin-top:8px"><button class="btn" style="margin-top:12px" onclick="calc()">計算截止日</button><p id="calcResult" style="font-weight:800;margin-top:14px"></p><p style="color:#64748b;font-size:14px">提醒：通訊交易（網購、電話購物）才有七天鑑賞期，實體店面不一定有。鑑賞期是「猶豫期」不是「試用期」，退貨要保持商品完整。</p></div><div class="card" style="background:#0e7a6b;color:#fff"><h3>緊急聯絡</h3><p style="color:#fff">消費者服務專線</p><p style="font-size:36px;font-weight:900;margin:0">1950</p><p style="color:#e2e8f0">週一至週五 8:30-17:30<br>也可到行政院消費者保護會網站線上申訴</p><p style="font-size:13px;color:#cbd5e1">本站提供一般資訊，如涉及金額大、合約複雜，建議諮詢律師或消保團體。</p></div></div></section>
+
+<section class="wrap" id="complaint"><h2>我要投訴，幫我處理</h2><p class="sub">填完送出，投訴只會寄到站方管理員的信箱。請先準備好發票、對話截圖，填得越清楚，處理越快。</p>
+<div class="two"><div class="card"><div class="form">
+<div><label>你的姓名 *</label><input id="c_name" placeholder="例如：王小明"></div>
+<div><label>你的 Email *</label><input id="c_email" type="email" placeholder="我們會用這個信箱回覆你"></div>
+<div><label>你的電話 / LINE</label><input id="c_contact" placeholder="選填，方便聯絡你的方式"></div>
+<div><label>店家名稱 *</label><input id="c_shop" placeholder="例如：XX 購物"></div>
+<div><label>買了什麼？多少錢？ *</label><input id="c_product" placeholder="例如：手機，2990元"></div>
+<div><label>購買日期</label><input id="c_date" type="date"></div>
+<div class="full"><label>你希望店家怎麼處理？</label><select id="c_want"><option>退款</option><option>換貨</option><option>修好</option><option>店家道歉 / 說明</option><option>其他</option></select></div>
+<div class="full"><label>發生什麼事？請寫清楚 *</label><textarea id="c_desc" placeholder="例如：3/1 下單買手機，收到時螢幕有刮痕，聯繫客服三天沒回，希望退款。"></textarea></div>
+<div class="hp"><label>不要填這格<input id="c_hp" tabindex="-1" autocomplete="off"></label></div>
+<div class="full"><button class="btn" id="sendBtn" onclick="submitComplaint()">送出投訴 →</button><p id="status" style="font-weight:800;margin:10px 0 0"></p></div>
+</div></div>
+<div><div class="card"><h3>送出後會怎樣？</h3><p><b>1. 只有站方管理員看得到：</b>你的投訴直接寄到管理員信箱，網站上不會顯示任何人的投訴。</p><p><b>2. 我們會用你填的 Email 回覆你。</b></p><p><b>3. 我們會整理你的資料，請店家於 7 日內回覆。</b></p><div class="notice"><b>給店家看的範例回覆：</b><br>「您好，我們是消費者幫幫忙，有一位消費者反映在貴店購買商品遇到問題，我們已整理好發票與對話紀錄，希望貴店於 7 日內回覆處理方式，謝謝。」</div></div></div></div></section>
+
+<footer><div class="wrap">消費者幫幫忙 © 2026 ・ 一般資訊分享，非法律諮詢 ・ 遇到消費糾紛，先蒐證、留文字紀錄、打 1950</div></footer>
+
+<script>
+// 投訴會寄到管理員信箱（FormSubmit 免註冊服務）
+const FORM_ENDPOINT="https://formsubmit.co/ajax/tieha6688@gmail.com";
+
+function say(m,ok){const s=document.getElementById("status");s.textContent=m;s.style.color=ok?"#0e7a6b":"#b91c1c"}
+async function submitComplaint(){
+const v=id=>document.getElementById(id).value.trim();
+if(v("c_hp"))return;
+const name=v("c_name"),email=v("c_email"),shop=v("c_shop"),prod=v("c_product"),desc=v("c_desc");
+if(!name||!email||!shop||!prod||!desc){say("請把有 * 的地方都填完");return}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say("請填正確的 Email");return}
+const btn=document.getElementById("sendBtn");btn.disabled=true;btn.textContent="送出中…";
+try{
+const r=await fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({_captcha:"false",_template:"table",_subject:"【消費者投訴】"+shop+" - "+name,name:name,email:email,聯絡方式:v("c_contact"),店家:shop,商品金額:prod,購買日期:v("c_date"),希望處理:v("c_want"),發生什麼事:desc})});
+if(r.ok){say("已送出！我們會用你的 Email 回覆你。",1);["c_name","c_email","c_contact","c_shop","c_product","c_date","c_desc"].forEach(i=>document.getElementById(i).value="")}
+else{say("送出失敗，請稍後再試")}
+}catch(e){say("網路錯誤，請稍後再試")}
+btn.disabled=false;btn.textContent="送出投訴 →";
+}
+
+const faqs=[
+{cat:"網購",q:"網購七天鑑賞期怎麼算？",a:"從收到商品隔天起算 7 天，含例假日。例如週一收到，鑑賞期到下週一。注意：已拆封的個人衛生用品、生鮮、客製化商品等可能不適用，購買前要看賣場說明。"},
+{cat:"退貨退款",q:"店家一直拖延退款怎麼辦？",a:"先用文字再催一次，給明確期限，例如：請於 7 日內退款。保留對話紀錄，若期限到仍未處理，打 1950 申訴，並附上訂單、付款證明。"},
+{cat:"瑕疵品",q:"收到瑕疵品，可以要求什麼？",a:"可以要求換貨、修復或退款。先拍照、錄影存證，不要自行拆修。向店家提出時寫清楚瑕疵位置與希望的處理方式。"},
+{cat:"預付型消費",q:"健身房 / 美容課程想解約，費用怎麼算？",a:"依定型化契約規定，通常可按未使用比例退款，但可能扣手續費。先看合約的解約條款，再向店家提出書面解約，保留證據。"},
+{cat:"預付型消費",q:"店家倒閉，預付款拿不回來？",a:"先蒐集付款證明、合約，向消保官申訴。若涉及多人，可向消基會詢問團體訴訟。刷卡付款者可向銀行詢問爭議款處理。"},
+{cat:"旅遊訂房",q:"訂房後想取消，訂金能拿回來嗎？",a:"看取消時間與業者規定，越早取消退越多。先看訂房平台的取消政策，再用文字向業者提出，保留截圖。"},
+{cat:"電信",q:"電信合約被話術綁約，可以解約嗎？",a:"先確認當初的錄音、合約內容。若業者未清楚說明重要事項，可主張解約。先向電信業者客服申訴，再向 1950 或 NCC 申訴。"},
+{cat:"網購",q:"網購收到假貨怎麼辦？",a:"保留商品、包裝、訂單與對話紀錄，不要丟棄。向平台檢舉並要求退款，同時向消保官申訴，必要時向警方報案。"},
+];
+const cats=["全部","網購","退貨退款","瑕疵品","預付型消費","旅遊訂房","電信"];
+let cur="全部";
+function renderFilters(){document.getElementById("filters").innerHTML=cats.map(c=>`<button class="filter ${c===cur?'active':''}" onclick="setCat('${c}')">${c}</button>`).join("")}
+function renderFaq(list){document.getElementById("faqList").innerHTML=list.map(f=>`<details class="faq"><summary>${f.q}<span class="tag">${f.cat}</span></summary><div>${f.a}</div></details>`).join("")||"<p>找不到相關問題，試試其他關鍵字，或直接打 1950 詢問。</p>"}
+function setCat(c){cur=c;renderFilters();applyFilter()}
+function applyFilter(){let kw=document.getElementById("q").value.trim();let list=faqs.filter(f=>(cur==="全部"||f.cat===cur)&&(!kw||(f.q+f.a).includes(kw)));renderFaq(list)}
+function doSearch(){applyFilter();document.getElementById("faq").scrollIntoView({behavior:"smooth"})}
+function quick(k){document.getElementById("q").value=k;cur="全部";renderFilters();applyFilter();document.getElementById("faq").scrollIntoView({behavior:"smooth"})}
+renderFilters();renderFaq(faqs);
+const checks=["發票 / 訂單截圖","付款證明（刷卡、轉帳紀錄）","與店家對話截圖","商品瑕疵照片 / 影片","合約 / 賣場頁面截圖","已寫好的訴求與期限"];
+document.getElementById("checklist").innerHTML=checks.map(c=>`<label><input type="checkbox" onchange="updateProgress()"> ${c}</label>`).join("");
+function updateProgress(){let n=document.querySelectorAll("#checklist input:checked").length;document.getElementById("progress").textContent=`已準備 ${n} / ${checks.length} 項，準備越完整，申訴越快。`}
+updateProgress();
+function genLetter(){
+let n=document.getElementById("name").value||"＿＿＿",s=document.getElementById("shop").value||"＿＿＿",d=document.getElementById("buyDate").value||"＿＿＿",a=document.getElementById("amount").value||"＿＿＿",desc=document.getElementById("desc").value||"請在此描述事件經過。";
+let t=`主旨：消費申訴 — 請求退貨退款 / 妥善處理\n\n${s} 負責人 / 客服部門 您好：\n\n本人 ${n} 於 ${d} 向貴公司購買商品／服務，金額為新台幣 ${a} 元。\n\n事件經過如下：\n${desc}\n\n本人訴求為：請貴公司於收到本信 7 日內妥善處理（退貨退款／換貨／修復），並以文字回覆處理結果。\n\n若期限內未獲妥善處理，本人將向消費者服務專線 1950 及主管機關申訴，並保留相關法律權利。\n\n附上發票、訂單、對話紀錄與商品照片作為佐證。\n\n謝謝您的協助。\n\n${n} 敬上`;
+document.getElementById("letterOut").textContent=t;
+}
+function copyLetter(){let t=document.getElementById("letterOut").textContent;navigator.clipboard.writeText(t).then(()=>alert("已複製申訴信！"))}
+function calc(){let v=document.getElementById("calcDate").value;if(!v){document.getElementById("calcResult").textContent="請先選擇日期";return}let d=new Date(v);d.setDate(d.getDate()+7);document.getElementById("calcResult").textContent=`鑑賞期截止日：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（收到隔天起算 7 天）`;}
+</script>
+</body>
+</html>
