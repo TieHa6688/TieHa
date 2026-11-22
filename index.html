@@ -84,7 +84,7 @@ if(error)throw error;
 say("已送出！我們會用你的 Email 回覆你。",1);
 ["c_name","c_email","c_contact","c_shop","c_product","c_date","c_desc"].forEach(i=>document.getElementById(i).value="");
 fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({_captcha:"false",_template:"table",_subject:"【消費者投訴】"+shop+" - "+name,name:name,email:email,聯絡方式:v("c_contact"),店家:shop,商品金額:prod,希望處理:v("c_want"),發生什麼事:desc})}).catch(()=>{});
-}catch(e){say("送出失敗，請稍後再試")}
+}catch(e){say("送出失敗："+(e&&e.message?e.message:"請稍後再試"))}
 btn.disabled=false;btn.textContent="送出投訴 →";
 }
 
