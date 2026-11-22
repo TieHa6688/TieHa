@@ -18,7 +18,7 @@ section{padding:36px 0}h2{font-size:28px;margin:0 0 8px}.sub{color:#64748b;margi
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><div class="logo">消費者<span>幫幫忙</span></div><nav><a href="#faq">常見問題</a><a href="#flow">申訴流程</a><a href="#letter">申訴信產生器</a><a href="#calc">鑑賞期計算</a><a href="#complaint">我要投訴</a></nav></div></header>
+<header><div class="wrap nav"><div class="logo">消費者<span>幫幫忙</span></div><nav><a href="#faq">常見問題</a><a href="#flow">申訴流程</a><a href="#letter">申訴信產生器</a><a href="#calc">鑑賞期計算</a><a href="#complaint">我要投訴</a><a href="#admin">管理員</a></nav></div></header>
 <div class="hero"><div class="wrap"><h1>買到瑕疵品、被拖延退款<br>別自己吞下去。</h1><p>這裡幫你查權益、走流程、寫申訴信。先蒐證、再申訴，照著做就好。</p><div class="searchbox"><input id="q" placeholder="搜尋問題，例如：七天、退款、瑕疵、健身房…"><button class="btn" onclick="doSearch()">搜尋</button></div><div class="quick"><span class="chip" onclick="quick('七天')">七天鑑賞期</span><span class="chip" onclick="quick('退款')">退款拖延</span><span class="chip" onclick="quick('瑕疵')">瑕疵品</span><span class="chip" onclick="quick('健身房')">健身房解約</span></div></div></div>
 
 <section class="wrap" id="faq"><h2>常見問題</h2><p class="sub">點分類篩選，或用上方搜尋。以下為一般資訊，非法律諮詢。</p>
@@ -47,27 +47,90 @@ section{padding:36px 0}h2{font-size:28px;margin:0 0 8px}.sub{color:#64748b;margi
 </div></div>
 <div><div class="card"><h3>送出後會怎樣？</h3><p><b>1. 只有站方管理員看得到：</b>你的投訴直接寄到管理員信箱，網站上不會顯示任何人的投訴。</p><p><b>2. 我們會用你填的 Email 回覆你。</b></p><p><b>3. 我們會整理你的資料，請店家於 7 日內回覆。</b></p><div class="notice"><b>給店家看的範例回覆：</b><br>「您好，我們是消費者幫幫忙，有一位消費者反映在貴店購買商品遇到問題，我們已整理好發票與對話紀錄，希望貴店於 7 日內回覆處理方式，謝謝。」</div></div></div></div></section>
 
+<section class="wrap" id="admin"><h2>管理員專區</h2><p class="sub">只有管理員 Email 能看到投訴。輸入 Email，系統會寄登入連結給你，點連結就登入，不用密碼。</p><div class="card">
+<div id="loginBox"><input id="a_email" type="email" placeholder="管理員 Email" style="width:100%;max-width:360px;padding:12px;border:1px solid #cbd5e1;border-radius:10px"> <button class="btn" onclick="adminLogin()">寄登入連結</button></div>
+<p id="a_status" style="font-weight:800;color:#0e7a6b"></p>
+<div id="adminBox" style="display:none">
+<p>登入身份：<b id="who"></b> <button class="btn light" style="border:1px solid #cbd5e1" onclick="adminLogout()">登出</button></p>
+<h3>投訴清單</h3><div id="adminList"></div>
+<h3 style="margin-top:22px">管理員名單（用 Email 設定權限）</h3><div id="adminEmails"></div>
+<input id="new_admin" type="email" placeholder="新管理員 Email，例如朋友的信箱" style="width:100%;max-width:360px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;margin-top:8px"> <button class="btn" onclick="addAdmin()">新增管理員</button>
+</div></div></section>
+
 <footer><div class="wrap">消費者幫幫忙 © 2026 ・ 一般資訊分享，非法律諮詢 ・ 遇到消費糾紛，先蒐證、留文字紀錄、打 1950</div></footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-// 投訴會寄到管理員信箱（FormSubmit 免註冊服務）
+// ★ 站長只改這兩行（Supabase 後台 Project Settings → API 複製）
+const SUPABASE_URL="https://iavtpxaiyzcmemzjtwgb.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY="sb_publishable_9mfk7yv843QvvXPpxq155A_k8b8ZaKi";
+// 投訴同時寄通知信到管理員信箱（FormSubmit 免註冊服務）
 const FORM_ENDPOINT="https://formsubmit.co/ajax/tieha6688@gmail.com";
 
 function say(m,ok){const s=document.getElementById("status");s.textContent=m;s.style.color=ok?"#0e7a6b":"#b91c1c"}
+const sb=(window.supabase&&!SUPABASE_URL.includes("你的"))?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+const esc=x=>String(x==null?"":x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function submitComplaint(){
 const v=id=>document.getElementById(id).value.trim();
 if(v("c_hp"))return;
 const name=v("c_name"),email=v("c_email"),shop=v("c_shop"),prod=v("c_product"),desc=v("c_desc");
 if(!name||!email||!shop||!prod||!desc){say("請把有 * 的地方都填完");return}
 if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say("請填正確的 Email");return}
+if(!sb){say("網站尚未完成後端設定，請稍後再試");return}
 const btn=document.getElementById("sendBtn");btn.disabled=true;btn.textContent="送出中…";
 try{
-const r=await fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({_captcha:"false",_template:"table",_subject:"【消費者投訴】"+shop+" - "+name,name:name,email:email,聯絡方式:v("c_contact"),店家:shop,商品金額:prod,購買日期:v("c_date"),希望處理:v("c_want"),發生什麼事:desc})});
-if(r.ok){say("已送出！我們會用你的 Email 回覆你。",1);["c_name","c_email","c_contact","c_shop","c_product","c_date","c_desc"].forEach(i=>document.getElementById(i).value="")}
-else{say("送出失敗，請稍後再試")}
-}catch(e){say("網路錯誤，請稍後再試")}
+const {error}=await sb.from("complaints").insert({name:name,email:email,contact:v("c_contact"),shop:shop,product:prod,buy_date:v("c_date"),want:v("c_want"),description:desc});
+if(error)throw error;
+say("已送出！我們會用你的 Email 回覆你。",1);
+["c_name","c_email","c_contact","c_shop","c_product","c_date","c_desc"].forEach(i=>document.getElementById(i).value="");
+fetch(FORM_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify({_captcha:"false",_template:"table",_subject:"【消費者投訴】"+shop+" - "+name,name:name,email:email,聯絡方式:v("c_contact"),店家:shop,商品金額:prod,希望處理:v("c_want"),發生什麼事:desc})}).catch(()=>{});
+}catch(e){say("送出失敗，請稍後再試")}
 btn.disabled=false;btn.textContent="送出投訴 →";
 }
+
+/* ===== 管理員 ===== */
+function aSay(m){document.getElementById("a_status").textContent=m}
+async function adminLogin(){
+if(!sb){aSay("網站尚未完成後端設定");return}
+const email=document.getElementById("a_email").value.trim();
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){aSay("請填正確的 Email");return}
+const {error}=await sb.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.origin+location.pathname+"#admin"}});
+aSay(error?"寄送失敗，請稍後再試":"登入連結已寄到 "+email+"，請到信箱點連結。")
+}
+async function adminLogout(){await sb.auth.signOut();checkAdmin()}
+async function checkAdmin(){
+if(!sb)return;
+const {data}=await sb.auth.getSession();const ses=data.session;
+const box=document.getElementById("adminBox"),login=document.getElementById("loginBox");
+box.style.display="none";login.style.display="block";
+if(!ses)return;
+const r=await sb.rpc("is_admin");
+if(!r.data){aSay("此 Email（"+ses.user.email+"）不是管理員，沒有權限。");return}
+aSay("");login.style.display="none";box.style.display="block";
+document.getElementById("who").textContent=ses.user.email;
+loadAdmin();
+}
+async function loadAdmin(){
+const c=await sb.from("complaints").select("*").order("created_at",{ascending:false});
+document.getElementById("adminList").innerHTML=(c.data||[]).map(x=>`<div style="border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-bottom:8px;${x.handled?'opacity:.55':''}"><b>${esc(x.name)} 投訴 ${esc(x.shop)}</b> ${x.handled?'✅已處理':'🆕'}<div style="font-size:13px;color:#64748b">${new Date(x.created_at).toLocaleString()}・${esc(x.product)}・希望：${esc(x.want)}・購買日：${esc(x.buy_date||"-")}</div><div style="font-size:14px;margin:6px 0">${esc(x.description)}</div><div style="font-size:13px">Email：<a href="mailto:${esc(x.email)}">${esc(x.email)}</a>　聯絡：${esc(x.contact||"-")}</div><button class="btn light" style="border:1px solid #cbd5e1;margin-top:8px" onclick="toggleDone(${x.id},${!x.handled})">${x.handled?'改回未處理':'標記已處理'}</button> <button class="btn light" style="border:1px solid #cbd5e1;margin-top:8px" onclick="delComplaint(${x.id})">刪除</button></div>`).join("")||"<p style='color:#64748b'>目前沒有投訴。</p>";
+const a=await sb.from("admins").select("email").order("email");
+document.getElementById("adminEmails").innerHTML=(a.data||[]).map(x=>`<div style="padding:6px 0;border-bottom:1px dashed #e2e8f0">${esc(x.email)} <button class="btn light" style="border:1px solid #cbd5e1;padding:4px 10px" data-e="${esc(x.email)}" onclick="delAdmin(this.dataset.e)">移除</button></div>`).join("");
+}
+async function toggleDone(id,val){await sb.from("complaints").update({handled:val}).eq("id",id);loadAdmin()}
+async function delComplaint(id){if(!confirm("確定刪除這筆投訴？"))return;await sb.from("complaints").delete().eq("id",id);loadAdmin()}
+async function addAdmin(){
+const e=document.getElementById("new_admin").value.trim().toLowerCase();
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){alert("請填正確的 Email");return}
+const r=await sb.from("admins").insert({email:e});
+if(r.error){alert("新增失敗")}else{document.getElementById("new_admin").value="";loadAdmin()}
+}
+async function delAdmin(e){
+const {data}=await sb.auth.getSession();
+if(data.session.user.email.toLowerCase()===e.toLowerCase()){alert("不能移除自己");return}
+if(!confirm("確定移除 "+e+" 的管理員權限？"))return;
+await sb.from("admins").delete().eq("email",e);loadAdmin()
+}
+if(sb){sb.auth.onAuthStateChange(()=>{setTimeout(checkAdmin,0)});checkAdmin()}
 
 const faqs=[
 {cat:"網購",q:"網購七天鑑賞期怎麼算？",a:"從收到商品隔天起算 7 天，含例假日。例如週一收到，鑑賞期到下週一。注意：已拆封的個人衛生用品、生鮮、客製化商品等可能不適用，購買前要看賣場說明。"},
