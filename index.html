@@ -94,7 +94,7 @@ async function adminLogin(){
 if(!sb){aSay("網站尚未完成後端設定");return}
 const email=document.getElementById("a_email").value.trim();
 if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){aSay("請填正確的 Email");return}
-const {error}=await sb.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.origin+location.pathname+"#admin"}});
+const {error}=await sb.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.origin+location.pathname}});
 aSay(error?"寄送失敗："+error.message:"登入連結已寄到 "+email+"，請到信箱點連結。")
 }
 async function adminLogout(){await sb.auth.signOut();checkAdmin()}
@@ -105,9 +105,10 @@ const box=document.getElementById("adminBox"),login=document.getElementById("log
 box.style.display="none";login.style.display="block";
 if(!ses)return;
 const r=await sb.rpc("is_admin");
-if(!r.data){aSay("此 Email（"+ses.user.email+"）不是管理員，沒有權限。");return}
+if(!r.data){aSay("已登入 "+ses.user.email+"，但判斷管理員失敗："+(r.error?r.error.message:"此 Email 不在管理員名單"));document.getElementById("admin").scrollIntoView();return}
 aSay("");login.style.display="none";box.style.display="block";
 document.getElementById("who").textContent=ses.user.email;
+document.getElementById("admin").scrollIntoView();
 loadAdmin();
 }
 async function loadAdmin(){
