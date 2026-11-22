@@ -62,7 +62,7 @@ section{padding:36px 0}h2{font-size:28px;margin:0 0 8px}.sub{color:#64748b;margi
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 // ★ 站長只改這兩行（Supabase 後台 Project Settings → API 複製）
-const SUPABASE_URL="https://iavtpxaiyzcmemzjtwgb.supabase.co/rest/v1/";
+const SUPABASE_URL="https://iavtpxaiyzcmemzjtwgb.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_9mfk7yv843QvvXPpxq155A_k8b8ZaKi";
 // 投訴同時寄通知信到管理員信箱（FormSubmit 免註冊服務）
 const FORM_ENDPOINT="https://formsubmit.co/ajax/tieha6688@gmail.com";
@@ -95,7 +95,7 @@ if(!sb){aSay("網站尚未完成後端設定");return}
 const email=document.getElementById("a_email").value.trim();
 if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){aSay("請填正確的 Email");return}
 const {error}=await sb.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.origin+location.pathname+"#admin"}});
-aSay(error?"寄送失敗，請稍後再試":"登入連結已寄到 "+email+"，請到信箱點連結。")
+aSay(error?"寄送失敗："+error.message:"登入連結已寄到 "+email+"，請到信箱點連結。")
 }
 async function adminLogout(){await sb.auth.signOut();checkAdmin()}
 async function checkAdmin(){
